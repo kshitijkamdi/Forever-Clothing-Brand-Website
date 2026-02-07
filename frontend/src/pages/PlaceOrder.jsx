@@ -4,10 +4,22 @@ import { assets } from "../assets/frontend_assets/assets";
 import CartValue from "../components/CartValue";
 import { useState } from "react";
 import { ShopContext } from "../context/ShopContext";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const PlaceOrder = () => {
   const [payMethod, setPayMethod] = useState("cod");
-
+  const {
+    navigate,
+    backendUrl,
+    token,
+    cartItems,
+    setCartItems,
+    getCartAmount,
+    delivery_fee,
+    amount,
+    products,
+  } = useContext(ShopContext);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -24,13 +36,123 @@ const PlaceOrder = () => {
     const name = event.target.name;
     const value = event.target.value;
 
-    setFormData(data => ({...data, [name]: value }));
+    setFormData((data) => ({ ...data, [name]: value }));
   };
 
-  const {navigate} = useContext(ShopContext);
+  const initPay= (order) =>{
+    const options= {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: order.currency,
+      name: "Order Payment",
+      description: "Order Payment",
+      order_id: order.id,
+      receipt: order.receipt,
+      handler: async(response) => {
+        console.log(response);
+        try {
+          const {data} = await axios.post(`${backendUrl}/api/order/verifyRazorpay`, response, { headers: { token } });
+          if(data.success){
+            navigate('/orders');
+            setCartItems({});
+          }
+          else{
+            toast.error(data.message);
+          }
+        } catch (error) {
+          console.log(error);
+          toast.error(error.message);
+        }
+    }
+  }
+  const rzp= new window.Razorpay(options);
+  rzp.open();
+}
+
+  const onSubmitHandler = async (event) => {
+    event.preventDefault();
+
+    try {
+      let orderItems = [];
+
+      for (const items in cartItems) {
+        for (const item in cartItems[items]) {
+          if (cartItems[items][item] > 0) {
+            const itemInfo = structuredClone(
+              products.find((product) => product._id === items),
+            );
+
+            if (itemInfo) {
+              itemInfo.size = item;
+              itemInfo.quantity = cartItems[items][item];
+              orderItems.push(itemInfo);
+            }
+          }
+        }
+      }
+
+      let orderData = {
+        items: orderItems,
+        amount: getCartAmount() + delivery_fee,
+        address: formData,
+      };
+
+      switch (payMethod) {
+        case "cod":
+          const response = await axios.post(
+            backendUrl + "/api/orders/place",
+            orderData,
+            { headers: { token } },
+          );
+          console.log(response.data.success);
+          if (response.data.success) {
+            navigate("/orders");
+            setCartItems({});
+          } else {
+            toast.error(response.data.message);
+          }
+          break;
+
+        case "stripe":
+          const stripeResponse = await axios.post(
+            backendUrl + "/api/orders/stripe",
+            orderData,
+            { headers: { token } },
+          );
+
+          if (stripeResponse.data.success) {
+            const { sessionUrl } = stripeResponse.data;
+            window.location.replace(sessionUrl);
+          } else {
+            toast.error(stripeResponse.data.message);
+          }
+          break;
+
+        case "razorpay":
+          const responseRazorpay = await axios.post(
+            backendUrl + "/api/orders/razorpay",
+            orderData,
+            { headers: { token } },
+          );
+
+          if (responseRazorpay.data.success) {
+            initPay(responseRazorpay.data.order);
+          }
+
+        default:
+          break;
+      }
+    } catch (error){
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
 
   return (
-    <form className="flex flex-col sm:flex-row gap-4 pt-5 sm:pt-12 justify-between min-h-[80vh]">
+    <form
+      onSubmit={onSubmitHandler}
+      className="flex flex-col sm:flex-row gap-4 pt-5 sm:pt-12 justify-between min-h-[80vh]"
+    >
       {/*----------Left Side------------ */}
       <div className="flex flex-col gap-4 w-full sm:max-w-[480px]">
         <div className="text-2xl my-5">
@@ -45,7 +167,7 @@ const PlaceOrder = () => {
             type="text"
             placeholder="First Name"
             className="border border-gray-300 bg-gray-200 p-2 rounded-lg"
-                        required
+            required
           />
           <input
             onChange={onChangeHandler}
@@ -54,7 +176,7 @@ const PlaceOrder = () => {
             type="text"
             placeholder="Last Name"
             className="border border-gray-300 bg-gray-200 p-2 rounded-lg"
-                        required
+            required
           />
         </div>
 
@@ -65,7 +187,7 @@ const PlaceOrder = () => {
           type="email"
           placeholder="Email Address"
           className="border border-gray-300 bg-gray-200 p-2 rounded-lg mt-3"
-                      required
+          required
         />
         <input
           onChange={onChangeHandler}
@@ -74,7 +196,7 @@ const PlaceOrder = () => {
           type="text"
           placeholder="street"
           className="border border-gray-300 bg-gray-200 p-2 rounded-lg mt-3"
-                      required
+          required
         />
         <input
           onChange={onChangeHandler}
@@ -83,7 +205,7 @@ const PlaceOrder = () => {
           type="number"
           placeholder="Phone Number"
           className="border border-gray-300 bg-gray-200 p-2 rounded-lg mt-3"
-                      required
+          required
         />
 
         <div className="flex gap-3">
@@ -94,7 +216,7 @@ const PlaceOrder = () => {
             type="text"
             placeholder="City"
             className="border border-gray-300 bg-gray-200 p-2 rounded-lg"
-                        required
+            required
           />
           <input
             onChange={onChangeHandler}
@@ -103,7 +225,7 @@ const PlaceOrder = () => {
             type="text"
             placeholder="State"
             className="border border-gray-300 bg-gray-200 p-2 rounded-lg"
-                        required
+            required
           />
         </div>
 
@@ -115,18 +237,16 @@ const PlaceOrder = () => {
             type="number"
             placeholder="Zipcode"
             className="border border-gray-300 bg-gray-200 p-2 rounded-lg"
-                        required
+            required
           />
           <input
             type="text"
             onChange={onChangeHandler}
             name="country"
             value={formData.country}
-
-            required       
-                 placeholder="Country"
+            placeholder="Country"
             className="border border-gray-300 bg-gray-200 p-2 rounded-lg"
-                        required
+            required
           />
         </div>
       </div>
@@ -182,12 +302,16 @@ const PlaceOrder = () => {
         </div>
 
         <div className="flex justify-end mt-5 px-3">
-          <button onClick={()=>navigate('orders')} className="bg-black text-white px-5 py-2">Place Order</button>
+          <button
+            type="submit"
+            onClick={() => navigate("orders")}
+            className="bg-black text-white px-5 py-2"
+          >
+            Place Order
+          </button>
         </div>
       </div>
-
-
-    </fo>
+    </form>
   );
 };
 

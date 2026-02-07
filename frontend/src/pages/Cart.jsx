@@ -7,20 +7,21 @@ import { assets } from "../assets/frontend_assets/assets";
 import CartValue from "../components/CartValue";
 
 const Cart = () => {
-  const { currency, products, cartItems, updateCart } = useContext(ShopContext);
+  const { currency, products, cartItems, updateQuantity } = useContext(ShopContext);
   const [cartData, setCartData] = useState([]);
 
   useEffect(() => {
-    let tempData = [];
     
+    const tempData = [];
+
     if(products.length>0){
-    for (let item in cartItems) {
-      for (let size in cartItems[item]) {
-        if (cartItems[item][size] > 0) {
+    for (const items in cartItems) {
+      for (const item in cartItems[items]) {
+        if (cartItems[items][item] > 0) {
           tempData.push({
-            _id: item,
-            size: size,
-            quantity: cartItems[item][size],
+            _id: items,
+            size: item,
+            quantity: cartItems[items][item],
           });
         }
       }
@@ -71,7 +72,7 @@ const Cart = () => {
                     onChange={(e) =>
                       e.target.value === "" || e.target.value === 0
                         ? null
-                        : updateCart(item._id, item.size, e.target.value)
+                        : updateQuantity(item._id, item.size, e.target.value)
                     }
                     defaultValue={item.quantity}
                     min={1}
@@ -82,7 +83,7 @@ const Cart = () => {
                   src={assets.bin_icon}
                   alt=""
                   className="w-6 cursor-pointer "
-                  onClick={() => updateCart(item._id, item.size, 0)}
+                  onClick={() => updateQuantity(item._id, item.size, 0)}
                 />
               </div>
             );

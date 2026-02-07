@@ -27,22 +27,22 @@ const ShopContextProvider = (props) => {
       return;
     }
 
-    let cartItem = structuredClone(cartItems);
+    let cartData= structuredClone(cartItems);
 
-    if (cartItem[itemId]) {
-      if (cartItem[itemId][size]) {
-        cartItem[itemId][size] += 1;
+    if (cartData[itemId]) {
+      if (cartData[itemId][size]) {
+        cartData[itemId][size] += 1;
       } else {
-        cartItem[itemId][size] = 1;
+        cartData[itemId][size] = 1;
       }
     } else {
-      cartItem[itemId] = {};
-      cartItem[itemId][size] = 1;
+      cartData[itemId] = {};
+      cartData[itemId][size] = 1;
     }
-    setCartItems(cartItem);
+    setCartItems(cartData);
 
     if (token) {
-      await axios.post(`${backendUrl}/api/cart/add`, { itemId, size }, { headers: { token } })
+      await axios.post(backendUrl + '/api/cart/add', { itemId, size }, { headers: { token } })
     }
     else {
       console.log(error);
@@ -69,7 +69,7 @@ const ShopContextProvider = (props) => {
   };
 
   //cart update
-  const updateCart = async (itemId, size, quantity) => {
+  const updateQuantity = async (itemId, size, quantity) => {
     let cartData = structuredClone(cartItems);
 
     cartData[itemId][size] = quantity;
@@ -125,7 +125,7 @@ const ShopContextProvider = (props) => {
   }
 
   // fetch cart data
-  const getCartData = async (token) => {
+  const getUserCart = async (token) => {
     try {
       const response = await axios.post(
         `${backendUrl}/api/cart/get`,
@@ -160,7 +160,7 @@ const ShopContextProvider = (props) => {
   useEffect(() => {
     if (!token && localStorage.getItem("token")) {
       setToken(localStorage.getItem("token"))
-      getCartData(localStorage.getItem("token"))
+      getUserCart(localStorage.getItem("token"))
     }
   },[])
 
@@ -174,15 +174,17 @@ const ShopContextProvider = (props) => {
     setShowSearch,
     cartItems,
     addToCart,
+    setCartItems,
     getCartCount,
-    updateCart,
+    updateQuantity,
     getCartAmount,
     navigate,
     backendUrl,
     token,
     setToken,
-    setCartItems,
-    getCartData
+    getUserCart
+    //getCartData,
+    // updateCart
   };
 
   return (
