@@ -33,7 +33,7 @@ const Navbar = () => {
 
   return (
     <div className="flex justify-between items-center py-4 font-medium">
-      <img src="\assets\RK logo.png" alt="" className="w-36" />
+      <img src="/src/assets/frontend_assets/logo.png" alt="" className="w-36" />
 
       <ul className="hidden sm:flex text-sm text-gray-700 gap-5">
         <NavLink to="/" className="flex flex-col gap-1 items-center">

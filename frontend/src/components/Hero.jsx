@@ -15,10 +15,10 @@ const Hero = () => {
             <p className="text-sm font-semibold md:text-base">Shop Now</p>
             <p className="w-8 md:w-11 h-[1px] bg-gray-500"></p>
           </div>
-        </div>
+        </div> 
       </div>
         {/* Hero right side */}
-        <img src="assets\IMG_20231024_133813.jpg" alt="" className="w-full sm:w-1/2 object-cover" />
+        <img src="/src/assets/frontend_assets/hero_img.png" alt="" className="w-full sm:w-1/2 object-cover" />
     </div>
   );
 };
