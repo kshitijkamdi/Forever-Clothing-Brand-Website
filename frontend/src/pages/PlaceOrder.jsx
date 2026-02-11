@@ -151,11 +151,11 @@ const PlaceOrder = () => {
   return (
     <form
       onSubmit={onSubmitHandler}
-      className="flex flex-col sm:flex-row gap-4 pt-5 sm:pt-12 justify-between min-h-[80vh]"
+      className="flex flex-col sm:flex-row gap-4 pt-5 sm:pt-12 justify-between min-h-[80vh] px-4 sm:px-0"
     >
-      {/*----------Left Side------------ */}
+      {/*----------Left Side (Delivery Info)------------ */}
       <div className="flex flex-col gap-4 w-full sm:max-w-[480px]">
-        <div className="text-2xl my-5">
+        <div className="text-xl sm:text-2xl my-5">
           <Title text1={"Delivery"} text2={"Information"} />
         </div>
 
@@ -166,7 +166,7 @@ const PlaceOrder = () => {
             value={formData.firstName}
             type="text"
             placeholder="First Name"
-            className="border border-gray-300 bg-gray-200 p-2 rounded-lg"
+            className="border border-gray-300 bg-gray-200 p-2 rounded-lg w-full"
             required
           />
           <input
@@ -175,7 +175,7 @@ const PlaceOrder = () => {
             value={formData.lastName}
             type="text"
             placeholder="Last Name"
-            className="border border-gray-300 bg-gray-200 p-2 rounded-lg"
+            className="border border-gray-300 bg-gray-200 p-2 rounded-lg w-full"
             required
           />
         </div>
@@ -186,7 +186,7 @@ const PlaceOrder = () => {
           value={formData.email}
           type="email"
           placeholder="Email Address"
-          className="border border-gray-300 bg-gray-200 p-2 rounded-lg mt-3"
+          className="border border-gray-300 bg-gray-200 p-2 rounded-lg mt-1"
           required
         />
         <input
@@ -194,17 +194,8 @@ const PlaceOrder = () => {
           name="street"
           value={formData.street}
           type="text"
-          placeholder="street"
-          className="border border-gray-300 bg-gray-200 p-2 rounded-lg mt-3"
-          required
-        />
-        <input
-          onChange={onChangeHandler}
-          name="phone"
-          value={formData.phone}
-          type="number"
-          placeholder="Phone Number"
-          className="border border-gray-300 bg-gray-200 p-2 rounded-lg mt-3"
+          placeholder="Street"
+          className="border border-gray-300 bg-gray-200 p-2 rounded-lg mt-1"
           required
         />
 
@@ -215,7 +206,7 @@ const PlaceOrder = () => {
             value={formData.city}
             type="text"
             placeholder="City"
-            className="border border-gray-300 bg-gray-200 p-2 rounded-lg"
+            className="border border-gray-300 bg-gray-200 p-2 rounded-lg w-full"
             required
           />
           <input
@@ -224,7 +215,7 @@ const PlaceOrder = () => {
             value={formData.state}
             type="text"
             placeholder="State"
-            className="border border-gray-300 bg-gray-200 p-2 rounded-lg"
+            className="border border-gray-300 bg-gray-200 p-2 rounded-lg w-full"
             required
           />
         </div>
@@ -236,7 +227,7 @@ const PlaceOrder = () => {
             value={formData.zipcode}
             type="number"
             placeholder="Zipcode"
-            className="border border-gray-300 bg-gray-200 p-2 rounded-lg"
+            className="border border-gray-300 bg-gray-200 p-2 rounded-lg w-full"
             required
           />
           <input
@@ -245,69 +236,63 @@ const PlaceOrder = () => {
             name="country"
             value={formData.country}
             placeholder="Country"
-            className="border border-gray-300 bg-gray-200 p-2 rounded-lg"
+            className="border border-gray-300 bg-gray-200 p-2 rounded-lg w-full"
             required
           />
         </div>
+        
+        <input
+          onChange={onChangeHandler}
+          name="phone"
+          value={formData.phone}
+          type="number"
+          placeholder="Phone Number"
+          className="border border-gray-300 bg-gray-200 p-2 rounded-lg mt-1"
+          required
+        />
       </div>
 
-      {/*----------Right Side------------ */}
-      <div className="mt-8">
-        <div className="mt-8 min-w-80">
+      {/*----------Right Side (Payment)------------ */}
+      <div className="mt-8 w-full sm:max-w-[500px]">
+        <div className="mt-8">
           <CartValue />
         </div>
 
-        <div className="mt-12 text-2xl">
+        <div className="mt-12">
           <Title text1={"Payment"} text2={"Method"} />
 
-          <div className="flex flex-col gap-3 lg:flex-row">
-            <div className="flex items-center gap-3 border p-2 px-3 cursor-pointer">
-              <div
-                onClick={() => setPayMethod("stripe")}
-                className="p-3 px-3 border border-gray-300 rounded-lg"
-              >
-                <p
-                  className={` min-w-3.5 h-1.5 rounded-full ${
-                    payMethod === "stripe" ? "bg-green-500" : ""
-                  }`}
-                />
-                <img src={assets.stripe_logo} alt="" className="h-5 mx-4" />
-              </div>
-              <div
-                onClick={() => setPayMethod("razorpay")}
-                className="p-3 px-3 border border-gray-300 rounded-lg"
-              >
-                <p
-                  className={` min-w-3.5 h-1.5 rounded-full ${
-                    payMethod === "razorpay" ? "bg-green-500" : ""
-                  }`}
-                />
-                <img src={assets.razorpay_logo} alt="" className="h-5 mx-4" />
-              </div>
-              <div
-                onClick={() => setPayMethod("cod")}
-                className="p-3 px-3 border border-gray-300 rounded-lg"
-              >
-                <p
-                  className={` min-w-3.5 h-1.5 rounded-full ${
-                    payMethod === "cod" ? "bg-green-500" : ""
-                  }`}
-                />
-                <p className="text-sm text-gray-600 font-medium">
-                  Cash on Delivery
-                </p>
-              </div>
+          {/* Corrected Grid/Flex for mobile stacking */}
+          <div className="flex flex-col lg:flex-row gap-3 mt-4">
+            <div
+              onClick={() => setPayMethod("stripe")}
+              className="flex items-center gap-3 border p-3 px-4 cursor-pointer rounded-md"
+            >
+              <p className={`min-w-3.5 h-3.5 border rounded-full ${payMethod === "stripe" ? "bg-green-500" : ""}`} />
+              <img src={assets.stripe_logo} alt="Stripe" className="h-4 mx-4" />
+            </div>
+            <div
+              onClick={() => setPayMethod("razorpay")}
+              className="flex items-center gap-3 border p-3 px-4 cursor-pointer rounded-md"
+            >
+              <p className={`min-w-3.5 h-3.5 border rounded-full ${payMethod === "razorpay" ? "bg-green-500" : ""}`} />
+              <img src={assets.razorpay_logo} alt="Razorpay" className="h-4 mx-4" />
+            </div>
+            <div
+              onClick={() => setPayMethod("cod")}
+              className="flex items-center gap-3 border p-3 px-4 cursor-pointer rounded-md"
+            >
+              <p className={`min-w-3.5 h-3.5 border rounded-full ${payMethod === "cod" ? "bg-green-500" : ""}`} />
+              <p className="text-sm text-gray-500 font-medium uppercase mx-4">Cash on Delivery</p>
             </div>
           </div>
         </div>
 
-        <div className="flex justify-end mt-5 px-3">
+        <div className="w-full text-end mt-8">
           <button
             type="submit"
-            onClick={() => navigate("orders")}
-            className="bg-black text-white px-5 py-2"
+            className="bg-black text-white px-16 py-3 text-sm active:bg-gray-700 transition-all"
           >
-            Place Order
+            PLACE ORDER
           </button>
         </div>
       </div>
