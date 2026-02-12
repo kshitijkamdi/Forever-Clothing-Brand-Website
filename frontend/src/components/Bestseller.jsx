@@ -20,8 +20,11 @@ const Bestseller = () => {
       <div className="text-center py-8 text-3xl">
         <Title text1={"Best"} text2={"Seller"} />
         <p className="w-75 m-auto text-center text-xs sm:text-sm md:text-base text-gray-600">
-          This is Kshitij Kamdi, the Creator of Kshitij K Vlogs (Youtube), who
-          also owns this Clothing Business.
+          The ones everyone chose — but somehow they’ll feel made just for{" "}
+          <b>YOU</b>.
+          <br />
+          Go on, pick the piece <b>YOUR</b> wardrobe has been quietly waiting
+          for.
         </p>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
