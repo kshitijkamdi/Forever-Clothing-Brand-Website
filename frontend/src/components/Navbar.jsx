@@ -59,7 +59,7 @@ const Navbar = () => {
 
       <div className="flex items-center gap-6">
         <FontAwesomeIcon
-          onClick={() => setShowSearch(true)}
+          onClick={() => setShowSearch(showSearch => !showSearch)}
           className=" cursor-pointer"
           icon={faMagnifyingGlass}
         />

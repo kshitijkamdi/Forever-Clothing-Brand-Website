@@ -1,20 +1,19 @@
 import React, { useState, useContext, useEffect } from "react";
 import { ShopContext } from "../context/ShopContext";
-import { useParams, useNavigate } from "react-router-dom"; // Added useNavigate
+import { useParams, useNavigate } from "react-router-dom";
 import { assets } from "../assets/frontend_assets/assets";
 import RelatedProducts from "../components/RelatedProducts";
 
 const Product = () => {
   const { products, currency, addToCart } = useContext(ShopContext);
   const { productid } = useParams();
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
 
   const [productData, setProductData] = useState(null);
   const [image, setImage] = useState("");
   const [size, setSize] = useState("");
 
   const fetchProductData = async () => {
-    // Optimized finding logic
     const item = products.find((item) => item._id === productid);
     if (item) {
       setProductData(item);
@@ -29,21 +28,49 @@ const Product = () => {
   return productData ? (
     <div className="border-t-2 pt-10 transition-opacity ease-in duration-500 opacity-100">
       
-      {/* --- Back Button --- */}
+      {/* ------------------- HEADER SECTION ------------------- */}
+      
+      {/* LAPTOP VIEW HEADER: Visible on sm screens and up */}
       <div 
         onClick={() => navigate(-1)} 
-        className="flex items-center gap-2 mb-6 cursor-pointer w-fit hover:opacity-70 transition-all"
+        className="hidden sm:flex items-center gap-2 mb-6 cursor-pointer w-fit hover:opacity-70 transition-all"
       >
-<img 
-    src={assets.dropdown_icon} 
-    className="w-3 transform rotate-90" // Added transform and ensured rotate-90
-    alt="back" 
-    style={{ transform: 'rotate(-180deg)' }} // Inline style as a fail-safe
-  />        <p className="text-sm font-medium">BACK</p>
+        <img 
+          src={assets.dropdown_icon} 
+          className="w-3 rotate-90" 
+          alt="back" 
+        />
+        <p className="text-sm font-medium">BACK</p>
       </div>
 
+      {/* MOBILE VIEW HEADER: Visible only on small screens */}
+      <div className="sm:hidden mb-4">
+        <div
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-4 cursor-pointer w-fit hover:opacity-70 transition-all text-gray-700"
+        >
+          <img
+            src={assets.dropdown_icon}
+            className="w-3 rotate-180"
+            alt="back"
+          />
+          <h3 className="text-xl font-medium m-0">{productData.name}</h3>
+        </div>
+        <div className="flex items-center gap-1 mt-2 justify-end">
+          {[...Array(4)].map((_, i) => (
+            <img key={i} src={assets.star_icon} alt="" className="w-3.5" />
+          ))}
+          <img src={assets.star_dull_icon} alt="" className="w-3.5" />
+          <p className="text-sm pl-2">(122)</p>
+        </div>
+      </div>
+
+
+      {/* ------------------- MAIN CONTENT ------------------- */}
+      
       <div className="flex flex-col sm:flex-row gap-12">
-        {/*----------Product Image------------ */}
+        
+        {/*----------Product Images------------ */}
         <div className="flex-1 flex flex-col-reverse gap-3 sm:flex-row">
           <div className="flex sm:flex-col overflow-x-auto sm:overflow-y-scroll justify-between sm:justify-normal w-full sm:w-[18.5%]">
             {productData.image.map((item, index) => (
@@ -63,14 +90,18 @@ const Product = () => {
 
         {/*----------Product Details------------ */}
         <div className="flex-1">
-          <h1 className="text-2xl font-medium mt-2">{productData.name}</h1>
-          <div className="flex items-center gap-1 mt-2">
+          {/* Title - Laptop Only (Since mobile has it in header) */}
+          <h1 className="hidden sm:block text-2xl font-medium mt-2">{productData.name}</h1>
+          
+          {/* Stars - Laptop Only */}
+          <div className="hidden sm:flex items-center gap-1 mt-2">
             {[...Array(4)].map((_, i) => (
               <img key={i} src={assets.star_icon} alt="" className="w-3.5" />
             ))}
             <img src={assets.star_dull_icon} alt="" className="w-3.5" />
             <p className="text-sm pl-2">(122)</p>
           </div>
+
           <p className="text-2xl font-semibold mt-5">
             {currency} {productData.price}
           </p>
@@ -120,10 +151,10 @@ const Product = () => {
         </div>
         <div className="flex flex-col gap-4 border px-6 py-6 text-sm text-gray-500">
           <p>
-            An e-commerce website is an online platform that facilitates the buying and selling of products or services over the internet. It serves as a virtual marketplace where businesses and individuals can showcase their products, interact with customers, and conduct transactions without the need for a physical presence.
+            An e-commerce website is an online platform that facilitates the buying and selling of products or services over the internet.
           </p>
           <p>
-            E-commerce websites typically display products or services along with detailed descriptions, images, prices, and any available variations (e.g., sizes, colors). Each product usually has its own dedicated page with relevant information.
+            Each product usually has its own dedicated page with relevant information.
           </p>
         </div>
       </div>
