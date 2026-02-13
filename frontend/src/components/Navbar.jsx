@@ -119,6 +119,9 @@ const Navbar = () => {
                 <NavLink onClick={() => setVisible(false)} to="/orders" className="py-4 pl-8 border-b flex items-center gap-3">
                   <FontAwesomeIcon icon={faBoxOpen} /> Orders
                 </NavLink>
+                <NavLink onClick={() => setVisible(false)} to="/myprofile" className="py-4 pl-8 border-b flex items-center gap-3">
+                  <FontAwesomeIcon icon={faUser} /> My Profile
+                </NavLink>
                 <p onClick={logout} className="py-4 pl-8 border-b flex items-center gap-3 text-red-500">
                   <FontAwesomeIcon icon={faRightFromBracket} /> Logout
                 </p>
