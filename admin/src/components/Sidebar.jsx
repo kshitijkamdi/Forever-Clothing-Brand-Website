@@ -1,18 +1,29 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { assets } from "../assets/assets";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { 
+  faPlus,
+  faList,
+  faChartLine, 
+  faCartFlatbed,
+  faCreditCard, 
+  faHeadset, 
+  faUserShield,
+  faGear 
+} from "@fortawesome/free-solid-svg-icons";
 
 const Sidebar = ({ showSidebar, setShowSidebar, setToken }) => {
   
   const navLinks = [
-    { to: "/add", icon: assets.add_icon, label: "Add items" },
-    { to: "/list", icon: assets.order_icon, label: "List items" },
-    { to: "/orders", icon: assets.parcel_icon, label: "Orders" },
-    { to: "/analysis", icon: assets.analysis_icon, label: "Analysis" },
-    { to: "/payments", icon: assets.analysis_icon, label: "Payments" }, // Update your assets/routes accordingly
-    { to: "/contact", icon: assets.analysis_icon, label: "Contact Us" },
-    { to: "/settings", icon: assets.analysis_icon, label: "Admin Settings" },
-  ];
+    { to: "/add", icon: faPlus, label: "Add items", type: 'fa' },
+    { to: "/list", icon: faList, label: "List items", type: 'fa' },
+    { to: "/orders", icon: faCartFlatbed, label: "Orders", type: 'fa' },
+    { to: "/analysis", icon: faChartLine, label: "Analysis", type: 'fa' },
+    { to: "/payments", icon: faCreditCard, label: "Payments", type: 'fa' },
+    //{ to: "/contact", icon: faHeadset, label: "Contact Us", type: 'fa' },
+    { to: "/settings", icon: faGear, label: "Settings", type: 'fa' },
+   ];
 
   return (
     <>
@@ -40,7 +51,7 @@ const Sidebar = ({ showSidebar, setShowSidebar, setToken }) => {
             ✕
           </button>
         </div>
-        
+
         <div className="flex flex-col md:pl-[15%] pt-10 md:pt-16 gap-3">
           {navLinks.map((link, index) => (
             <NavLink 
@@ -55,8 +66,13 @@ const Sidebar = ({ showSidebar, setShowSidebar, setToken }) => {
               `} 
               to={link.to}
             >
-              <img className="w-5 h-5 grayscale group-hover:grayscale-0" src={link.icon} alt={link.label} />
-              <p className="text-sm tracking-tight uppercase tracking-[0.1em]">{link.label}</p>
+{link.type === 'img' ? (
+                <img className="w-5 h-5 grayscale group-hover:grayscale-0" src={link.icon} alt={link.label} />
+              ) : (
+                <div className="w-5 h-5 flex items-center justify-center">
+                   <FontAwesomeIcon icon={link.icon} className="text-lg grayscale group-hover:grayscale-0" />
+                </div>
+              )}              <p className="text-sm tracking-tight uppercase tracking-[0.1em]">{link.label}</p>
             </NavLink>
           ))}
 
