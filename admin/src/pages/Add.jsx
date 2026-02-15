@@ -70,7 +70,7 @@ const Add = ({token}) => {
 
   return (
     <div>
-      <p className="text-2xl font-medium">Add Items</p>
+      <p className="text-2xl font-medium mx-5">Add Items</p>
       <hr />
       <form onSubmit={onSubmitHandler}>
         <p className="text-xl font-medium mt-6">Product Images</p>

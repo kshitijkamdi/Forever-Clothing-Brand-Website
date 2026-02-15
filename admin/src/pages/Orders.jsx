@@ -88,8 +88,8 @@ const Orders = ({ token }) => {
 
   return (
     <div className="p-4 sm:p-8 relative">
-      <h3 className="text-2xl font-light tracking-widest text-gray-800 mb-8 uppercase">
-        Order Management <span className="text-gray-400">/ Dashboard</span>
+      <h3 className="text-2xl font-light tracking-widest text-gray-800 mb-3 uppercase">
+        Order Management
       </h3>
 
       {/* --- FILTER & SEARCH BAR --- */}
@@ -106,7 +106,7 @@ const Orders = ({ token }) => {
           ))}
         </div>
         
-        <div className="relative w-full md:w-80">
+        {/*<div className="relative w-full md:w-80">
           <input 
             type="text" 
             placeholder="Search Order ID..." 
@@ -114,7 +114,7 @@ const Orders = ({ token }) => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-        </div>
+        </div>*/}
       </div>
 
       {/* --- ORDER LIST --- */}
@@ -125,8 +125,28 @@ const Orders = ({ token }) => {
             className="grid grid-cols-1 sm:grid-cols-[0.5fr_2fr_1.5fr_1fr_1.2fr] gap-6 items-center border border-gray-100 bg-white p-6 rounded-xl hover:border-gray-300 transition-all cursor-pointer"
             onClick={() => setSelectedOrder(order)}
           >
-            <img className="w-10 grayscale mx-auto sm:mx-0" src={assets.parcel_icon} alt="" />
-            
+{/* --- RESPONSIVE ITEM PREVIEW STACK --- */}
+<div className="flex justify-center sm:justify-start w-full sm:w-auto">
+  <div className="flex -space-x-3 sm:-space-x-4 overflow-hidden">
+    {order.items.slice(0, 4).map((item, i) => (
+      <div key={i} className="relative">
+        <img
+          className="inline-block h-14 w-12 sm:h-16 sm:w-14 rounded-xl ring-2 ring-white object-cover bg-gray-50 shadow-sm"
+          src={item.image && item.image[0] ? item.image[0] : ""}
+          alt=""
+        />
+        {/* Overlap Logic for 5+ items */}
+        {i === 3 && order.items.length > 4 && (
+          <div className="absolute inset-0 bg-black/60 rounded-xl ring-2 ring-white flex items-center justify-center backdrop-blur-[1px]">
+            <span className="text-white text-[10px] sm:text-xs font-black">
+              +{order.items.length - 4}
+            </span>
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+</div>            
             <div className="text-sm">
                 <p className="font-bold text-gray-900 mb-1">ID: #{order._id.slice(-8)}</p>
                 <p className="text-gray-500">{order.address.firstName} {order.address.lastName}</p>
