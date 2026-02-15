@@ -2,158 +2,129 @@ import React, { useContext, useState, useEffect } from 'react';
 import { ShopContext } from '../context/ShopContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { assets } from '../assets/frontend_assets/assets';
+import Title from '../components/Title';
 
 const MyProfile = () => {
     const { token, backendUrl, navigate } = useContext(ShopContext);
-    
     const [isEditing, setIsEditing] = useState(false);
     const [userData, setUserData] = useState({
         name: "",
         email: "",
         phone: "",
-        address: {
-            street: "",
-            city: "",
-            state: "",
-            zipcode: "",
-            country: ""
-        },
-        password: "" // Keep empty unless updating
+        address: { houseNo: "", landmark: "", street: "", city: "", state: "", zipcode: "", country: "" },
+        password: ""
     });
 
-    // Fetch User Data from Backend
     const getUserProfile = async () => {
         try {
             const response = await axios.get(`${backendUrl}/api/user/get-profile`, { headers: { token } });
             if (response.data.success) {
-                // Merge fetched data with state, keeping structure intact
                 setUserData(prev => ({
                     ...prev,
                     ...response.data.user,
-                    address: response.data.user.address || prev.address
+                    address: { ...prev.address, ...response.data.user.address }
                 }));
             }
         } catch (error) {
-            console.log(error);
             toast.error("Failed to load profile");
         }
     };
 
-    // Update Profile in Backend
     const updateUserProfile = async () => {
         try {
             const response = await axios.post(`${backendUrl}/api/user/update-profile`, userData, { headers: { token } });
             if (response.data.success) {
-                toast.success("Profile updated exquisitely");
+                toast.success("Profile Updated Successfully");
                 setIsEditing(false);
-                await getUserProfile();
+                getUserProfile();
             } else {
                 toast.error(response.data.message);
             }
         } catch (error) {
-            console.log(error);
-            toast.error(error.message);
+            toast.error("Update failed");
         }
     };
 
     useEffect(() => {
-        if (token) {
-            getUserProfile();
-        } else {
-            navigate('/login');
-        }
+        if (token) getUserProfile();
+        else navigate('/login');
     }, [token]);
 
+    // Handle nested changes correctly
+    const handleAddressChange = (field, value) => {
+        setUserData(prev => ({
+            ...prev,
+            address: { ...prev.address, [field]: value }
+        }));
+    };
+
     return (
-        <div className="max-w-2xl mx-auto mt-10 p-6 sm:p-10 bg-white shadow-xl shadow-gray-100 rounded-3xl border border-gray-50 transition-all duration-700">
-            <div className="flex justify-between items-center mb-10 pb-5 border-b border-gray-100">
-                <h1 className="text-3xl font-light tracking-tighter text-black uppercase">My <span className="font-bold">Profile</span></h1>
-                <button 
-                    onClick={() => isEditing ? updateUserProfile() : setIsEditing(true)}
-                    className={`px-6 py-2 rounded-full text-xs font-bold tracking-widest transition-all uppercase 
-                    ${isEditing ? 'bg-green-500 text-white shadow-lg shadow-green-100 hover:bg-green-600' : 'border border-black text-black hover:bg-black hover:text-white'}`}
-                >
-                    {isEditing ? "Save Changes" : "Edit Profile"}
-                </button>
+        <div className="max-w-3xl mx-auto mt-14 p-8 sm:p-12 bg-white shadow-2xl rounded-[2rem] border border-gray-50">
+            <div className="flex justify-between items-end mb-12 border-b pb-8">
+                <h1 className="text-3xl font-light tracking-tighter uppercase"><span><Title text1={"MY"} text2={"PROFILE"} /></span></h1>
+                <div className="flex gap-4">
+                    {isEditing && (
+                        <button onClick={() => {setIsEditing(false); getUserProfile();}} className="px-6 py-2 rounded-full text-[10px] font-bold uppercase border border-red-200 text-red-400">
+                            Cancel
+                        </button>
+                    )}
+                    <button onClick={() => isEditing ? updateUserProfile() : setIsEditing(true)}
+                        className={`px-8 py-2 rounded-full text-[10px] font-bold uppercase transition-all ${isEditing ? 'bg-black text-white' : 'border border-black'}`}>
+                        {isEditing ? "Confirm Changes" : "Modify Details"}
+                    </button>
+                </div>
             </div>
 
-            <div className="flex flex-col gap-8">
-                {/* Personal Information */}
-                <section>
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-300 mb-6">Account Identity</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div className="flex flex-col gap-2">
-                            <label className="text-xs text-gray-400 font-medium">Full Name</label>
-                            {isEditing ? (
-                                <input type="text" className="border-b border-gray-200 outline-none focus:border-black py-1 text-sm font-medium" value={userData.name} onChange={(e) => setUserData({...userData, name: e.target.value})} />
-                            ) : (
-                                <p className="text-sm font-semibold">{userData.name || "Not set"}</p>
-                            )}
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <label className="text-xs text-gray-400 font-medium">Email Address</label>
-                            <p className="text-sm font-medium text-gray-500">{userData.email}</p> 
-                            {/* Typically email is read-only for security, but can be changed if your backend supports it */}
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <label className="text-xs text-gray-400 font-medium">Phone Number</label>
-                            {isEditing ? (
-                                <input type="number" className="border-b border-gray-200 outline-none focus:border-black py-1 text-sm font-medium" value={userData.phone} onChange={(e) => setUserData({...userData, phone: e.target.value})} />
-                            ) : (
-                                <p className="text-sm font-semibold">{userData.phone || "Not set"}</p>
-                            )}
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <label className="text-xs text-gray-400 font-medium">Password</label>
-                            {isEditing ? (
-                                <input type="password" placeholder="Enter new password" className="border-b border-gray-200 outline-none focus:border-black py-1 text-sm font-medium italic" onChange={(e) => setUserData({...userData, password: e.target.value})} />
-                            ) : (
-                                <p className="text-sm font-semibold italic">••••••••</p>
-                            )}
-                        </div>
+            <div className="space-y-10">
+                <section className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                    {/* Top Level Fields */}
+                    <div className="flex flex-col gap-1">
+                        <label className="text-[10px] uppercase font-bold text-gray-400">Full Name</label>
+                        {isEditing ? <input type="text" value={userData.name} onChange={(e) => setUserData({...userData, name: e.target.value})} className="border-b py-1 outline-none focus:border-black" /> : <p className="font-semibold py-1">{userData.name || "---"}</p>}
+                    </div>
+                    <div className="flex flex-col gap-1">
+                        <label className="text-[10px] uppercase font-bold text-gray-400">Email</label>
+                        <p className="text-sm text-gray-400 italic py-1">{userData.email}</p>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                        <label className="text-[10px] uppercase font-bold text-gray-400">Phone</label>
+                        {isEditing ? <input type="number" value={userData.phone} onChange={(e) => setUserData({...userData, phone: e.target.value})} className="border-b py-1 outline-none" /> : <p className="font-semibold py-1">{userData.phone || "---"}</p>}
                     </div>
                 </section>
 
-                <hr className="border-gray-50" />
+                <hr className="opacity-50" />
 
                 {/* Address Section */}
-                <section>
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-300 mb-6">Primary Shipping Address</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div className="sm:col-span-2 flex flex-col gap-2">
-                            <label className="text-xs text-gray-400 font-medium">Street</label>
-                            {isEditing ? (
-                                <input type="text" className="border-b border-gray-200 outline-none focus:border-black py-1 text-sm font-medium" value={userData.address.street} onChange={(e) => setUserData({...userData, address: {...userData.address, street: e.target.value}})} />
-                            ) : (
-                                <p className="text-sm font-semibold">{userData.address.street || "Add street details"}</p>
-                            )}
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <label className="text-xs text-gray-400 font-medium">City</label>
-                            {isEditing ? (
-                                <input type="text" className="border-b border-gray-200 outline-none focus:border-black py-1 text-sm font-medium" value={userData.address.city} onChange={(e) => setUserData({...userData, address: {...userData.address, city: e.target.value}})} />
-                            ) : (
-                                <p className="text-sm font-semibold">{userData.address.city || "Not set"}</p>
-                            )}
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <label className="text-xs text-gray-400 font-medium">Zipcode</label>
-                            {isEditing ? (
-                                <input type="text" className="border-b border-gray-200 outline-none focus:border-black py-1 text-sm font-medium" value={userData.address.zipcode} onChange={(e) => setUserData({...userData, address: {...userData.address, zipcode: e.target.value}})} />
-                            ) : (
-                                <p className="text-sm font-semibold font-mono">{userData.address.zipcode || "Not set"}</p>
-                            )}
-                        </div>
+                <section className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
+                    <div className="flex flex-col gap-1">
+                        <label className="text-[10px] uppercase font-bold text-gray-400">House No. / Building</label>
+                        {isEditing ? <input type="text" value={userData.address.houseNo} onChange={(e) => handleAddressChange('houseNo', e.target.value)} className="border-b py-1 outline-none" /> : <p className="font-semibold py-1">{userData.address.houseNo || "---"}</p>}
+                    </div>
+                    <div className="flex flex-col gap-1">
+                        <label className="text-[10px] uppercase font-bold text-gray-400">Landmark</label>
+                        {isEditing ? <input type="text" value={userData.address.landmark} onChange={(e) => handleAddressChange('landmark', e.target.value)} className="border-b py-1 outline-none" /> : <p className="font-semibold py-1">{userData.address.landmark || "---"}</p>}
+                    </div>
+                    <div className="sm:col-span-2 flex flex-col gap-1">
+                        <label className="text-[10px] uppercase font-bold text-gray-400">Street</label>
+                        {isEditing ? <input type="text" value={userData.address.street} onChange={(e) => handleAddressChange('street', e.target.value)} className="border-b py-1 outline-none" /> : <p className="font-semibold py-1">{userData.address.street || "---"}</p>}
+                    </div>
+                    <div className="flex flex-col gap-1">
+                        <label className="text-[10px] uppercase font-bold text-gray-400">City</label>
+                        {isEditing ? <input type="text" value={userData.address.city} onChange={(e) => handleAddressChange('city', e.target.value)} className="border-b py-1 outline-none" /> : <p className="font-semibold py-1">{userData.address.city || "---"}</p>}
+                    </div>
+                    <div className="flex flex-col gap-1">
+                        <label className="text-[10px] uppercase font-bold text-gray-400">State</label>
+                        {isEditing ? <input type="text" value={userData.address.state} onChange={(e) => handleAddressChange('state', e.target.value)} className="border-b py-1 outline-none" /> : <p className="font-semibold py-1">{userData.address.state || "---"}</p>}
+                    </div>
+                    <div className="flex flex-col gap-1">
+                        <label className="text-[10px] uppercase font-bold text-gray-400">Zipcode</label>
+                        {isEditing ? <input type="text" value={userData.address.zipcode} onChange={(e) => handleAddressChange('zipcode', e.target.value)} className="border-b py-1 outline-none" /> : <p className="font-semibold py-1">{userData.address.zipcode || "---"}</p>}
+                    </div>
+                    <div className="flex flex-col gap-1">
+                        <label className="text-[10px] uppercase font-bold text-gray-400">Country</label>
+                        {isEditing ? <input type="text" value={userData.address.country} onChange={(e) => handleAddressChange('country', e.target.value)} className="border-b py-1 outline-none" /> : <p className="font-semibold py-1">{userData.address.country || "---"}</p>}
                     </div>
                 </section>
-                
-                {isEditing && (
-                    <div className="flex gap-4 mt-6">
-                        <button onClick={() => setIsEditing(false)} className="flex-1 border py-3 text-xs font-bold tracking-widest uppercase hover:bg-gray-50 transition-all">Cancel</button>
-                        <button onClick={updateUserProfile} className="flex-1 bg-black text-white py-3 text-xs font-bold tracking-widest uppercase active:scale-95 transition-all shadow-xl shadow-gray-200">Save Profile</button>
-                    </div>
-                )}
             </div>
         </div>
     );

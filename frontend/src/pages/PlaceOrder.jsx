@@ -29,7 +29,9 @@ const PlaceOrder = () => {
     firstName: "",
     lastName: "",
     email: "",
+    place: "",
     street: "",
+    landmark:"",
     city: "",
     state: "",
     zipcode: "",
@@ -240,6 +242,26 @@ const PlaceOrder = () => {
             className="border border-gray-300 bg-gray-50 p-2.5 rounded-lg mt-1 focus:outline-black"
             required
           />
+          <div className="flex gap-3">
+            <input
+            onChange={onChangeHandler}
+            name="street"
+            value={formData.place}
+            type="text"
+            placeholder="House No., Building Name"
+            className="border border-gray-300 bg-gray-50 p-2.5 rounded-lg mt-1 focus:outline-black"
+            required
+          />
+          <input
+            onChange={onChangeHandler}
+            name="street"
+            value={formData.landmark}
+            type="text"
+            placeholder="Landmark"
+            className="border border-gray-300 bg-gray-50 p-2.5 rounded-lg mt-1 focus:outline-black"
+            required
+          />
+          </div>
           <input
             onChange={onChangeHandler}
             name="street"

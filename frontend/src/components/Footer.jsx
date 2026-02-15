@@ -8,7 +8,7 @@ const Footer = () => {
         
         {/* Brand Section */}
         <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
-          <img src={assets.logo} className="w-32 mb-6 grayscale hover:grayscale-0 transition-all duration-300" alt="Logo" />
+          <img src={assets.logo} className="w-32 mb-6" alt="Logo" />
           <p className="w-full md:w-2/3 leading-relaxed">
             Forever is dedicated to bringing you timeless fashion that blends modern trends with classic elegance. Our mission is to empower your style with premium quality and sustainable choices.
           </p>

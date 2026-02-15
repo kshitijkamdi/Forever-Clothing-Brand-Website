@@ -79,6 +79,69 @@ const registerUser = async (req, res) => {
     }
 };
 
+// for updating user profile
+const updateProfile = async (req, res) => {
+    try {
+        const { userId, name, phone, address, password } = req.body;
+        
+        // Dynamic update object
+        const updateData = {};
+
+        if (name) updateData.name = name;
+        if (phone) updateData.phone = phone;
+
+        // Update specific address sub-fields without overwriting existing ones
+        if (address) {
+            const parsedAddress = typeof address === 'string' ? JSON.parse(address) : address;
+            Object.keys(parsedAddress).forEach((key) => {
+                updateData[`address.${key}`] = parsedAddress[key];
+            });
+        }
+
+        if (password) {
+            if (password.length < 8) {
+                return res.json({ success: false, message: "Password must be at least 8 characters" });
+            }
+            const salt = await bcrypt.genSalt(10);
+            updateData.password = await bcrypt.hash(password, salt);
+        }
+
+        // Apply partial update
+        const updatedUser = await userModel.findByIdAndUpdate(
+            userId, 
+            { $set: updateData }, 
+            { new: true, runValidators: true }
+        ).select("-password");
+
+        if (!updatedUser) {
+            return res.json({ success: false, message: "User not found" });
+        }
+
+        res.json({ success: true, message: "Profile updated exquisitely", user: updatedUser });
+
+    } catch (error) {
+        console.error(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
+const getProfile = async (req, res) => {
+    try {
+        const { userId } = req.body; // Attached by authUser middleware
+        const user = await userModel.findById(userId).select("-password");
+
+        if (!user) {
+            console.log(error.message);
+            return res.json({ success: false, message: "User not found" });
+        }
+
+        res.json({ success: true, user });
+    } catch (error) {
+        console.error(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
 // route for admin login
 const adminLogin = async (req, res) => {
     try {
@@ -94,4 +157,4 @@ const adminLogin = async (req, res) => {
     }
  };
 
-export { userLogin, registerUser, adminLogin };
+export { userLogin, registerUser, updateProfile, adminLogin, getProfile };
