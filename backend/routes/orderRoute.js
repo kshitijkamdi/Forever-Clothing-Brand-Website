@@ -15,7 +15,8 @@ const orderRouter = express.Router();
 
 // Admin Features
 orderRouter.post('/list', adminAuth, allOrders);
-orderRouter.post('/status', adminAuth, updateStatus);
+orderRouter.post('/status', authUser, updateStatus);
+//orderRouter.post('/status', adminAuth, updateStatus);
 
 //payment features
 orderRouter.post('/place', authUser, placeOrderCOD);

@@ -39,7 +39,7 @@ const userLogin = async (req, res) => {
 // route for user registration
 const registerUser = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, phone, address } = req.body;
 
         // check if user already exists
         const exists = await userModel.findOne({ email });
@@ -66,6 +66,8 @@ const registerUser = async (req, res) => {
             name,
             email,
             password: hashedPassword,
+            phone: phone || "", // Save phone if provided
+            address: address || {} // Save address object if provided
         });
 
         const user = await newUser.save();
@@ -131,7 +133,6 @@ const getProfile = async (req, res) => {
         const user = await userModel.findById(userId).select("-password");
 
         if (!user) {
-            console.log(error.message);
             return res.json({ success: false, message: "User not found" });
         }
 
