@@ -36,6 +36,14 @@ const productSchema = new mongoose.Schema({
   bestseller: {
     type: Boolean,
   },
+  visibility:{
+    type: Boolean,
+    default: true
+  },
+  markOutOfStock:{
+    type: Boolean,
+    default: false
+  }
 });
 
 const ProductModel =

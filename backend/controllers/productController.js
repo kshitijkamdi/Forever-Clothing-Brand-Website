@@ -49,6 +49,36 @@ const addProduct = async (req, res) => {
     }
 };
 
+// control for updating visibility and out-of-stock status
+const updateProductStatus = async (req, res) => {
+    try {
+        const { id, visibility, markOutOfStock } = req.body;
+
+        const updateData = {};
+        // Explicitly check for undefined so we can set the values even if they don't exist in the doc yet
+        if (visibility !== undefined) updateData.visibility = visibility;
+        if (markOutOfStock !== undefined) updateData.markOutOfStock = markOutOfStock;
+
+        // { upsert: true } is not needed here since the document already exists, 
+        // but we ensure the fields are added to the existing document.
+        const updatedProduct = await ProductModel.findByIdAndUpdate(
+            id, 
+            { $set: updateData }, 
+            { new: true }
+        );
+
+        if (!updatedProduct) {
+            return res.json({ success: false, message: "Product not found" });
+        }
+
+        res.json({ success: true, message: 'Status updated successfully', product: updatedProduct });
+
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
 //control for getting all products
 const listProducts = async (req, res) => {
     try {
@@ -84,4 +114,4 @@ const singleProductInfo = async (req, res) => {
     }
 };
 
-export { addProduct, listProducts, removeProduct, singleProductInfo };
+export { addProduct, listProducts, removeProduct, singleProductInfo, updateProductStatus };
