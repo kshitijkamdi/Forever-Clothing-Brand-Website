@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { Link, NavLink } from "react-router-dom";
+import { assets } from "../assets/frontend_assets/assets";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faMagnifyingGlass,
@@ -36,7 +37,7 @@ const Navbar = () => {
       
       {/* 1. Logo Navigates to Home */}
       <Link to='/'>
-        <img src="/src/assets/frontend_assets/logo.png" alt="Forever Logo" className="w-32 cursor-pointer" />
+        <img src={assets.logo} alt="Forever Logo" className="w-32 cursor-pointer" />
       </Link>
 
       {/* Desktop Navigation */}

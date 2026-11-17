@@ -1,4 +1,5 @@
 import React from "react";
+import { assets } from "../assets/frontend_assets/assets";
 
 const Hero = () => {
   return (
@@ -18,7 +19,7 @@ const Hero = () => {
         </div> 
       </div>
         {/* Hero right side */}
-        <img src="/src/assets/frontend_assets/hero_img.png" alt="" className="w-full sm:w-1/2 object-cover" />
+        <img src={assets.hero_img} alt="Hero" className="w-full sm:w-1/2 object-cover" />
     </div>
   );
 };
